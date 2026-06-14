@@ -1,0 +1,1593 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: blob:; connect-src 'none'; img-src 'self' data: https:; font-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; form-action 'none'; base-uri 'none'">
+  <title>仅搜索</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='8' y1='8' x2='56' y2='56'%3E%3Cstop stop-color='%23f7faff'/%3E%3Cstop offset='.55' stop-color='%23ffffff'/%3E%3Cstop offset='1' stop-color='%23f2f4ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='5' y='5' width='54' height='54' rx='18' fill='url(%23g)'/%3E%3Ccircle cx='28.5' cy='28.5' r='12.5' fill='none' stroke='%23111827' stroke-width='4'/%3E%3Cpath d='M39 39l9 9' fill='none' stroke='%23111827' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='49' cy='23' r='3' fill='%237480ff'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --text: #111827;
+      --muted: #6b7280;
+      --page-bg: linear-gradient(180deg, #f7faff 0%, #ffffff 48%, #f7f8fb 100%);
+      --surface: rgba(255, 255, 255, 0.78);
+      --surface-strong: #ffffff;
+      --surface-soft: rgba(255, 255, 255, 0.62);
+      --surface-card: rgba(255, 255, 255, 0.9);
+      --line: rgba(17, 24, 39, 0.08);
+      --line-soft: rgba(17, 24, 39, 0.05);
+      --shadow-lg: 0 32px 80px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 16px 34px rgba(15, 23, 42, 0.06);
+      --shadow-sm: 0 10px 18px rgba(15, 23, 42, 0.05);
+      --hero-dot: #6f77ff;
+      --ring: 0 0 0 1px rgba(116, 128, 255, 0.24), 0 0 0 10px rgba(116, 128, 255, 0.12), 0 30px 56px rgba(116, 128, 255, 0.18);
+      --easing: cubic-bezier(.22, 1, .36, 1);
+      --panel-width: min(1120px, calc(100vw - 48px));
+      --search-height: 64px;
+      --search-radius: 32px;
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --text: #f5f7fb;
+      --muted: #a5afc1;
+      --page-bg: linear-gradient(180deg, #0d1321 0%, #111a2c 48%, #0f1624 100%);
+      --surface: rgba(18, 26, 42, 0.82);
+      --surface-strong: rgba(16, 24, 39, 0.98);
+      --surface-soft: rgba(20, 29, 46, 0.74);
+      --surface-card: rgba(18, 26, 42, 0.92);
+      --line: rgba(255, 255, 255, 0.08);
+      --line-soft: rgba(255, 255, 255, 0.05);
+      --shadow-lg: 0 32px 84px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 18px 36px rgba(0, 0, 0, 0.25);
+      --shadow-sm: 0 12px 22px rgba(0, 0, 0, 0.18);
+      --hero-dot: #8b93ff;
+      --ring: 0 0 0 1px rgba(148, 163, 255, 0.28), 0 0 0 10px rgba(116, 128, 255, 0.18), 0 30px 56px rgba(22, 34, 58, 0.3);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html[data-theme="system"] {
+        color-scheme: dark;
+      }
+
+      html[data-theme="system"] body {
+        background: linear-gradient(180deg, #0d1321 0%, #111a2c 48%, #0f1624 100%);
+      }
+
+      html[data-theme="system"] {
+        --text: #f5f7fb;
+        --muted: #a5afc1;
+        --page-bg: linear-gradient(180deg, #0d1321 0%, #111a2c 48%, #0f1624 100%);
+        --surface: rgba(18, 26, 42, 0.82);
+        --surface-strong: rgba(16, 24, 39, 0.98);
+        --surface-soft: rgba(20, 29, 46, 0.74);
+        --surface-card: rgba(18, 26, 42, 0.92);
+        --line: rgba(255, 255, 255, 0.08);
+        --line-soft: rgba(255, 255, 255, 0.05);
+        --shadow-lg: 0 32px 84px rgba(0, 0, 0, 0.35);
+        --shadow-md: 0 18px 36px rgba(0, 0, 0, 0.25);
+        --shadow-sm: 0 12px 22px rgba(0, 0, 0, 0.18);
+        --hero-dot: #8b93ff;
+        --ring: 0 0 0 1px rgba(148, 163, 255, 0.28), 0 0 0 10px rgba(116, 128, 255, 0.18), 0 30px 56px rgba(22, 34, 58, 0.3);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "SF Pro Display", "SF Pro Text", Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+      background: var(--page-bg);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at 18% 14%, rgba(206, 224, 255, 0.5), transparent 32%),
+        radial-gradient(circle at 82% 16%, rgba(255, 227, 239, 0.48), transparent 30%),
+        radial-gradient(circle at 50% 72%, rgba(233, 241, 255, 0.42), transparent 28%);
+      opacity: 0.95;
+    }
+
+    body::after {
+      z-index: -1;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0)),
+        repeating-linear-gradient(90deg, rgba(17, 24, 39, 0.015) 0, rgba(17, 24, 39, 0.015) 1px, transparent 1px, transparent 84px),
+        repeating-linear-gradient(180deg, rgba(17, 24, 39, 0.01) 0, rgba(17, 24, 39, 0.01) 1px, transparent 1px, transparent 84px);
+      opacity: 0.4;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.16));
+    }
+
+    button,
+    input {
+      font: inherit;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      background: none;
+      padding: 0;
+    }
+
+    button:focus-visible {
+      outline: none;
+      box-shadow: var(--ring);
+    }
+
+    .page-shell {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100svh;
+      padding: max(22px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .page-panel {
+      position: relative;
+      width: var(--panel-width);
+      min-height: min(980px, calc(100vh - 48px));
+      padding: 36px 44px 30px;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background: var(--surface);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(24px) saturate(1.08);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .page-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0) 26%),
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.58), transparent 32%);
+      opacity: 0.85;
+      z-index: -1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .brand-badge svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+      stroke: #5a6b9a;
+    }
+
+    .brand-text {
+      font-size: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .top-actions {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface-strong);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+      display: grid;
+      place-items: center;
+      transition: transform 180ms var(--easing), box-shadow 180ms var(--easing), border-color 180ms var(--easing), background 180ms var(--easing);
+    }
+
+    .icon-button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(116, 128, 255, 0.16);
+    }
+
+    .icon-button svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      stroke: currentColor;
+    }
+
+    .menu-panel {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      width: 248px;
+      padding: 14px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: var(--surface-strong);
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-6px) scale(0.98);
+      transform-origin: top right;
+      transition: opacity 180ms var(--easing), transform 180ms var(--easing);
+    }
+
+    .menu-panel.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .menu-title {
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .menu-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .menu-row {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line-soft);
+    }
+
+    .menu-row > span {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .segmented {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .segmented button {
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 34px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.72);
+      white-space: nowrap;
+      transition: border-color 180ms var(--easing), color 180ms var(--easing), background 180ms var(--easing);
+    }
+
+    [data-theme="dark"] .segmented button,
+    html[data-theme="system"] .segmented button {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .segmented button.is-active {
+      color: var(--text);
+      border-color: rgba(116, 128, 255, 0.22);
+      background: var(--surface-strong);
+    }
+
+    .menu-action {
+      width: 100%;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line-soft);
+      background: var(--surface-soft);
+      color: var(--text);
+      text-align: left;
+      transition: background 180ms var(--easing), transform 180ms var(--easing);
+    }
+
+    .menu-action:hover {
+      transform: translateY(-1px);
+      background: var(--surface-strong);
+    }
+
+    .hero {
+      display: grid;
+      justify-items: center;
+      gap: 16px;
+      padding-top: clamp(46px, 11vh, 118px);
+      text-align: center;
+    }
+
+    .hero-stage {
+      width: 100%;
+      min-height: 156px;
+      display: grid;
+      grid-template-areas: "hero";
+      place-items: center;
+    }
+
+    .hero-copy,
+    .hero-logo {
+      grid-area: hero;
+    }
+
+    .hero-copy {
+      display: grid;
+      justify-items: center;
+      gap: 16px;
+      transition: opacity 260ms var(--easing), transform 260ms var(--easing);
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: clamp(44px, 5vw, 72px);
+      line-height: 0.98;
+      font-weight: 760;
+      letter-spacing: 0;
+      color: var(--text);
+    }
+
+    .hero-title::after {
+      content: "";
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      margin-left: 10px;
+      border-radius: 50%;
+      background: var(--hero-dot);
+      vertical-align: 12px;
+      box-shadow: 0 0 0 8px rgba(111, 119, 255, 0.06);
+    }
+
+    .hero-subtitle {
+      margin: 0;
+      font-size: clamp(22px, 2.4vw, 24px);
+      line-height: 1.1;
+      font-weight: 680;
+    }
+
+    .hero-logo {
+      width: 144px;
+      min-height: 142px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px) scale(.9);
+      transition: opacity 260ms var(--easing), transform 260ms var(--easing);
+    }
+
+    .hero.is-source-selected .hero-copy {
+      opacity: 0;
+      transform: translateY(-10px) scale(.96);
+    }
+
+    .hero.is-source-selected .hero-logo {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .hero-logo.is-entering {
+      animation: heroLogoPop 360ms var(--easing);
+    }
+
+    .hero-logo .source-logo {
+      width: 96px;
+      height: 96px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: inset 0 0 0 1px rgba(116, 128, 255, 0.16), 0 24px 44px rgba(100, 116, 255, 0.2);
+    }
+
+    .hero-logo .logo-image {
+      padding: 12px;
+    }
+
+    .hero-logo-name {
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 720;
+    }
+
+    @keyframes heroLogoPop {
+      0% {
+        opacity: 0;
+        transform: translateY(12px) scale(.82);
+      }
+
+      70% {
+        opacity: 1;
+        transform: translateY(-2px) scale(1.04);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .search-form {
+      width: 100%;
+      margin-top: 14px;
+      display: grid;
+      justify-items: center;
+      gap: 0;
+    }
+
+    .search-shell {
+      width: 100%;
+      max-width: 720px;
+      height: 64px;
+      border-radius: 32px;
+      border: 1px solid var(--line);
+      background: var(--surface-strong);
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.06);
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px 0 18px;
+      transition: box-shadow 220ms var(--easing), border-color 220ms var(--easing), transform 220ms var(--easing);
+    }
+
+    .search-shell:focus-within {
+      border-color: rgba(116, 128, 255, 0.22);
+      box-shadow: 0 0 0 1px rgba(116, 128, 255, .24), 0 0 0 10px rgba(116, 128, 255, .12), 0 30px 56px rgba(116, 128, 255, .24);
+      transform: translateY(-1px);
+    }
+
+    .search-icon {
+      width: 22px;
+      height: 22px;
+      color: var(--muted);
+      display: block;
+      flex: 0 0 auto;
+    }
+
+    .search-input {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 18px;
+      padding: 0;
+      outline: 0;
+      box-shadow: none;
+    }
+
+    .search-input:focus {
+      outline: 0;
+      box-shadow: none;
+    }
+
+    .search-input::-webkit-search-decoration,
+    .search-input::-webkit-search-cancel-button,
+    .search-input::-webkit-search-results-button,
+    .search-input::-webkit-search-results-decoration {
+      display: none;
+    }
+
+    .search-input::placeholder {
+      color: #9aa3b2;
+    }
+
+    .submit-button {
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      transition: transform 180ms var(--easing), box-shadow 180ms var(--easing), background 180ms var(--easing), color 180ms var(--easing);
+    }
+
+    .submit-button:hover {
+      transform: translateY(-1px);
+      background: var(--surface-strong);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .submit-button svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      stroke: currentColor;
+    }
+
+    .source-section {
+      margin-top: 84px;
+      display: grid;
+      justify-items: center;
+      gap: 18px;
+    }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 120px);
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .source-card {
+      width: 120px;
+      height: 120px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: var(--surface-card);
+      box-shadow: var(--shadow-md);
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 12px;
+      padding: 16px 12px;
+      transition: transform 220ms var(--easing), box-shadow 220ms var(--easing), border-color 220ms var(--easing), background 220ms var(--easing);
+    }
+
+    .source-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 44px rgba(15, 23, 42, 0.1);
+      border-color: rgba(116, 128, 255, 0.14);
+    }
+
+    .source-card.is-active {
+      border-color: rgba(116, 128, 255, 0.48);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(239, 243, 255, 0.96));
+      box-shadow: 0 0 0 4px rgba(116, 128, 255, 0.16), 0 26px 48px rgba(100, 116, 255, 0.24);
+    }
+
+    .source-card.is-active .source-logo {
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: inset 0 0 0 1px rgba(116, 128, 255, 0.18), 0 12px 24px rgba(100, 116, 255, 0.16);
+    }
+
+    .source-card.is-active .source-name {
+      color: var(--text);
+      font-weight: 720;
+    }
+
+    [data-theme="dark"] .source-card.is-active,
+    html[data-theme="system"] .source-card.is-active {
+      border-color: rgba(148, 163, 255, 0.5);
+      background: linear-gradient(180deg, rgba(31, 41, 68, 0.96), rgba(23, 33, 56, 0.95));
+      box-shadow: 0 0 0 4px rgba(148, 163, 255, 0.18), 0 26px 48px rgba(13, 22, 42, 0.42);
+    }
+
+    [data-theme="dark"] .source-card.is-active .source-logo,
+    html[data-theme="system"] .source-card.is-active .source-logo {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 255, 0.2), 0 12px 24px rgba(0, 0, 0, 0.24);
+    }
+
+    .source-logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.66);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.56);
+    }
+
+    [data-theme="dark"] .source-logo,
+    html[data-theme="system"] .source-logo {
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .logo-image,
+    .logo-fallback {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .logo-image {
+      object-fit: contain;
+      padding: 6px;
+      opacity: 0;
+      transition: opacity 180ms var(--easing);
+    }
+
+    .source-logo[data-logo-ready="true"] .logo-image {
+      opacity: 1;
+    }
+
+    .source-logo[data-logo-ready="true"] .logo-fallback {
+      opacity: 0;
+    }
+
+    .logo-fallback {
+      position: absolute;
+      inset: 0;
+      transition: opacity 180ms var(--easing);
+    }
+
+    .logo-fallback svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .source-name {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .recent-section {
+      margin-top: 78px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .section-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .section-title svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+      stroke: var(--muted);
+    }
+
+    .clear-button {
+      font-size: 14px;
+      color: var(--muted);
+      transition: color 180ms var(--easing);
+    }
+
+    .clear-button:hover {
+      color: var(--text);
+    }
+
+    .recent-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    @keyframes recentFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .recent-chip {
+      min-height: 36px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface-card);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      box-shadow: var(--shadow-sm);
+      animation: recentFadeIn 320ms var(--easing) both;
+      transition: transform 180ms var(--easing), box-shadow 180ms var(--easing), border-color 180ms var(--easing);
+    }
+
+    .recent-chip:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(116, 128, 255, 0.18);
+    }
+
+    .recent-chip svg {
+      width: 15px;
+      height: 15px;
+      display: block;
+      stroke: var(--muted);
+      flex: 0 0 auto;
+    }
+
+    .empty-state {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 860px) {
+      .page-panel {
+        padding: 28px 28px 24px;
+      }
+
+      .hero {
+        padding-top: 34px;
+      }
+
+      .source-section {
+        margin-top: 64px;
+      }
+
+      .source-grid {
+        grid-template-columns: repeat(3, 120px);
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page-shell {
+        padding: max(14px, env(safe-area-inset-top)) 12px max(18px, env(safe-area-inset-bottom));
+        align-items: flex-start;
+      }
+
+      .page-panel {
+        width: min(100%, calc(100vw - 24px));
+        min-height: auto;
+        padding: 18px 18px 22px;
+        border-radius: 28px;
+      }
+
+      .topbar {
+        gap: 10px;
+      }
+
+      .brand-badge {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+      }
+
+      .brand-text {
+        font-size: 15px;
+      }
+
+      .icon-button {
+        width: 38px;
+        height: 38px;
+      }
+
+      .menu-panel {
+        width: min(240px, calc(100vw - 36px));
+      }
+
+      .hero {
+        padding-top: 44px;
+        gap: 14px;
+      }
+
+      .hero-stage {
+        min-height: 136px;
+      }
+
+      .hero-title {
+        font-size: 54px;
+      }
+
+      .hero-title::after {
+        width: 9px;
+        height: 9px;
+        vertical-align: 8px;
+      }
+
+      .hero-subtitle {
+        font-size: 19px;
+      }
+
+      .hero-logo {
+        width: 124px;
+        min-height: 124px;
+        gap: 9px;
+      }
+
+      .hero-logo .source-logo {
+        width: 86px;
+        height: 86px;
+        border-radius: 24px;
+      }
+
+      .hero-logo-name {
+        font-size: 16px;
+      }
+
+      .search-shell {
+        width: 100%;
+        height: 64px;
+      }
+
+      .search-input {
+        font-size: 17px;
+      }
+
+      .source-section {
+        margin-top: 42px;
+      }
+
+      .source-grid {
+        width: 100%;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .source-card {
+        width: 100%;
+      }
+
+      .recent-section {
+        margin-top: 42px;
+      }
+
+      .recent-list {
+        gap: 10px;
+      }
+
+      .recent-chip {
+        max-width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <main class="page-panel" aria-labelledby="heroTitle">
+      <header class="topbar">
+        <div class="brand-inline" aria-label="仅搜索品牌">
+          <span class="brand-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="10.5" cy="10.5" r="5.5" stroke-width="2"></circle>
+              <path d="M15 15l4 4" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+          </span>
+          <span class="brand-text">仅搜索</span>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" id="themeToggle" type="button" aria-label="切换深色模式">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 3v2.4M12 18.6V21M4.93 4.93l1.7 1.7M17.37 17.37l1.7 1.7M3 12h2.4M18.6 12H21M4.93 19.07l1.7-1.7M17.37 6.63l1.7-1.7" stroke-width="1.8" stroke-linecap="round"></path>
+              <circle cx="12" cy="12" r="4.2" stroke-width="1.8"></circle>
+            </svg>
+          </button>
+          <button class="icon-button" id="menuToggle" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="menuPanel">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M6 8h12M6 12h12M6 16h12" stroke-width="1.8" stroke-linecap="round"></path>
+            </svg>
+          </button>
+          <section class="menu-panel" id="menuPanel" aria-label="页面设置" hidden>
+            <p class="menu-title">外观</p>
+            <div class="menu-group">
+              <div class="menu-row">
+                <span>主题</span>
+                <div class="segmented" id="themeSegment">
+                  <button type="button" data-theme-option="light">浅色</button>
+                  <button type="button" data-theme-option="dark">深色</button>
+                  <button type="button" data-theme-option="system">系统</button>
+                </div>
+              </div>
+              <div class="menu-row">
+                <span>打开方式</span>
+                <div class="segmented" id="targetSegment">
+                  <button type="button" data-target-option="same">当前页</button>
+                  <button type="button" data-target-option="new">新标签</button>
+                </div>
+              </div>
+              <button class="menu-action" id="clearHistory" type="button">清空最近搜索</button>
+            </div>
+          </section>
+        </div>
+      </header>
+
+      <section class="hero" id="hero">
+        <h1 class="sr-only" id="heroTitle">仅搜索</h1>
+        <div class="hero-stage" id="heroStage">
+          <div class="hero-copy">
+            <p class="hero-title" aria-hidden="true">仅搜索</p>
+            <p class="hero-subtitle" aria-hidden="true">一次搜索，全网直达</p>
+          </div>
+          <div class="hero-logo" id="heroLogo" aria-hidden="true">
+            <span class="hero-logo-mark" id="heroLogoMark"></span>
+            <span class="hero-logo-name" id="heroLogoName"></span>
+          </div>
+        </div>
+
+        <form class="search-form" id="searchForm" autocomplete="off">
+          <label class="sr-only" for="searchInput">搜索关键词</label>
+          <div class="search-shell">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+              <path d="M20 20l-4.2-4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+            <input class="search-input" id="searchInput" name="q" type="search" inputmode="search" placeholder="搜点什么..." autocomplete="off">
+            <button class="submit-button" type="submit" aria-label="搜索">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="source-section" aria-labelledby="sourceTitle">
+        <h2 class="sr-only" id="sourceTitle">搜索来源</h2>
+        <div class="source-grid" id="sourceGrid"></div>
+      </section>
+
+      <section class="recent-section" aria-labelledby="recentTitle">
+        <div class="section-head">
+          <div class="section-title" id="recentTitle">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+              <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"></circle>
+            </svg>
+            <span>最近搜索</span>
+          </div>
+          <button class="clear-button" id="clearInlineHistory" type="button">清空记录</button>
+        </div>
+        <ul class="recent-list" id="recentList"></ul>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    const APP_CONFIG = [
+      { id: "xiaohongshu", name: "小红书", enabledByDefault: true, priority: 100, web: "https://www.xiaohongshu.com/search_result?keyword={q}", scheme: null, notes: "生活方式灵感" },
+      { id: "douyin", name: "抖音", enabledByDefault: true, priority: 90, web: "https://www.douyin.com/search/{q}", scheme: null, notes: "短视频热点" },
+      { id: "bilibili", name: "哔哩哔哩", enabledByDefault: true, priority: 80, web: "https://search.bilibili.com/all?keyword={q}", scheme: null, notes: "视频与社区" },
+      { id: "zhihu", name: "知乎", enabledByDefault: true, priority: 70, web: "https://www.zhihu.com/search?type=content&q={q}", scheme: null, notes: "问答与观点" },
+      { id: "taobao", name: "淘宝", enabledByDefault: true, priority: 60, web: "https://s.taobao.com/search?q={q}", scheme: null, notes: "商品与消费" },
+      { id: "baidu", name: "百度", enabledByDefault: true, priority: 50, web: "https://www.baidu.com/s?wd={q}", scheme: null, notes: "全网网页搜索" }
+    ];
+
+    const LOGO_PNG_SOURCES = {
+      xiaohongshu: [
+        "assets/logo-xiaohongshu.webp",
+        "https://www.xiaohongshu.com/favicon.ico"
+      ],
+      douyin: [
+        "assets/logo-douyin.webp",
+        "https://www.douyin.com/favicon.ico"
+      ],
+      bilibili: [
+        "assets/logo-bilibili.webp",
+        "https://www.bilibili.com/favicon.ico"
+      ],
+      zhihu: [
+        "assets/logo-zhihu.webp",
+        "https://www.zhihu.com/favicon.ico"
+      ],
+      taobao: [
+        "assets/logo-taobao.webp",
+        "https://www.taobao.com/favicon.ico"
+      ],
+      baidu: [
+        "assets/logo-baidu.webp",
+        "https://www.baidu.com/favicon.ico"
+      ]
+    };
+
+    const LOGO_FALLBACK_META = {
+      xiaohongshu: { label: "小红书", bg: "#ff2442", fg: "#ffffff" },
+      douyin: { label: "抖音", bg: "#111111", fg: "#ffffff" },
+      bilibili: { label: "B站", bg: "#00a1d6", fg: "#ffffff" },
+      zhihu: { label: "知乎", bg: "#0084ff", fg: "#ffffff" },
+      taobao: { label: "淘宝", bg: "#ff6a00", fg: "#ffffff" },
+      baidu: { label: "百度", bg: "#ffffff", fg: "#2953ff" }
+    };
+
+    const KEYS = {
+      settings: "only-search:settings",
+      history: "only-search:history",
+      selectedApp: "only-search:selectedApp",
+      theme: "only-search:theme"
+    };
+
+    const DEFAULT_SETTINGS = {
+      openTarget: "same",
+      saveHistory: true,
+      theme: "system"
+    };
+
+    const RECENT_HISTORY_LIMITS = { wide: 5, compact: 5 };
+
+    const safeStorage = (() => {
+      let supported;
+      const testKey = "only-search:storage-test";
+      const parse = (value, fallback) => {
+        if (value === null || value === undefined) return fallback;
+        try { return JSON.parse(value); } catch { return fallback; }
+      };
+      return {
+        available() {
+          if (supported !== undefined) return supported;
+          try {
+            window.localStorage.setItem(testKey, "1");
+            window.localStorage.removeItem(testKey);
+            supported = true;
+          } catch {
+            supported = false;
+          }
+          return supported;
+        },
+        get(key, fallback) {
+          try {
+            if (!this.available()) return fallback;
+            return parse(window.localStorage.getItem(key), fallback);
+          } catch {
+            supported = false;
+            return fallback;
+          }
+        },
+        set(key, value) {
+          try {
+            if (!this.available()) return false;
+            window.localStorage.setItem(key, JSON.stringify(value));
+            return true;
+          } catch {
+            supported = false;
+            return false;
+          }
+        }
+      };
+    })();
+
+    const currentEnv = detectEnvironment();
+    const appById = new Map(APP_CONFIG.map(app => [app.id, app]));
+    const logoCache = new Map();
+    const logoLoadQueue = [];
+    let logoLoadScheduled = false;
+    let menuCloseTimer = 0;
+    let heroSourceVisible = false;
+    let heroLogoAppId = "";
+    let heroLogoName = "";
+
+    let settings = normalizeSettings({
+      ...safeStorage.get(KEYS.settings, DEFAULT_SETTINGS),
+      theme: safeStorage.get(KEYS.theme, DEFAULT_SETTINGS.theme)
+    });
+    let selectedAppId = safeStorage.get(KEYS.selectedApp, APP_CONFIG[0].id);
+    let history = normalizeHistory(safeStorage.get(KEYS.history, []));
+
+    const dom = {
+      hero: document.getElementById("hero"),
+      heroLogo: document.getElementById("heroLogo"),
+      heroLogoMark: document.getElementById("heroLogoMark"),
+      heroLogoName: document.getElementById("heroLogoName"),
+      sourceGrid: document.getElementById("sourceGrid"),
+      searchForm: document.getElementById("searchForm"),
+      searchInput: document.getElementById("searchInput"),
+      recentList: document.getElementById("recentList"),
+      clearInlineHistory: document.getElementById("clearInlineHistory"),
+      clearHistory: document.getElementById("clearHistory"),
+      themeToggle: document.getElementById("themeToggle"),
+      menuToggle: document.getElementById("menuToggle"),
+      menuPanel: document.getElementById("menuPanel"),
+      themeSegment: document.getElementById("themeSegment"),
+      targetSegment: document.getElementById("targetSegment")
+    };
+
+    init();
+
+    function init() {
+      ensureSelectedApp();
+      applyTheme();
+      bindEvents();
+      renderAll();
+    }
+
+    function bindEvents() {
+      dom.searchForm.addEventListener("submit", event => {
+        event.preventDefault();
+        performSearch();
+      });
+
+      dom.clearInlineHistory.addEventListener("click", clearHistory);
+      dom.clearHistory.addEventListener("click", () => {
+        clearHistory();
+        closeMenu();
+      });
+
+      dom.themeToggle.addEventListener("click", () => {
+        setTheme(getEffectiveTheme() === "dark" ? "light" : "dark");
+      });
+
+      dom.menuToggle.addEventListener("click", toggleMenu);
+
+      document.addEventListener("click", event => {
+        if (dom.menuPanel.hidden) return;
+        const target = event.target;
+        if (dom.menuPanel.contains(target) || dom.menuToggle.contains(target)) return;
+        closeMenu();
+      });
+
+      dom.themeSegment.addEventListener("click", event => {
+        const button = event.target.closest("[data-theme-option]");
+        if (!button) return;
+        setTheme(button.dataset.themeOption);
+      });
+
+      dom.targetSegment.addEventListener("click", event => {
+        const button = event.target.closest("[data-target-option]");
+        if (!button) return;
+        updateSetting("openTarget", button.dataset.targetOption === "new" ? "new" : "same");
+      });
+
+      window.addEventListener("storage", event => {
+        if (event.key === KEYS.history) {
+          history = normalizeHistory(safeStorage.get(KEYS.history, []));
+          renderRecentHistory();
+        }
+      });
+    }
+
+    function renderAll() {
+      renderSourceGrid();
+      renderRecentHistory();
+      syncMenuState();
+    }
+
+    function renderSourceGrid() {
+      dom.sourceGrid.replaceChildren();
+      APP_CONFIG.forEach(app => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "source-card" + (app.id === selectedAppId ? " is-active" : "");
+        button.dataset.appId = app.id;
+        button.setAttribute("aria-pressed", String(app.id === selectedAppId));
+        button.setAttribute("aria-label", `选择 ${app.name}`);
+        button.appendChild(createLogo(app.id));
+
+        const label = document.createElement("span");
+        label.className = "source-name";
+        label.textContent = app.name;
+        button.appendChild(label);
+
+        button.addEventListener("click", () => {
+          if (selectedAppId !== app.id) {
+            selectedAppId = app.id;
+            persist(KEYS.selectedApp, selectedAppId);
+            updateSourceSelection();
+          }
+          updateHeroSourceLogo();
+        });
+
+        dom.sourceGrid.appendChild(button);
+      });
+    }
+
+    function createLogo(appId) {
+      const wrap = document.createElement("span");
+      wrap.className = "source-logo";
+      wrap.setAttribute("aria-hidden", "true");
+
+      const img = document.createElement("img");
+      img.className = "logo-image";
+      img.alt = "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.fetchPriority = "low";
+      img.width = 54;
+      img.height = 54;
+      img.referrerPolicy = "no-referrer";
+
+      const fallback = document.createElement("span");
+      fallback.className = "logo-fallback";
+      fallback.innerHTML = getFallbackLogoSvg(appId);
+
+      wrap.append(img, fallback);
+      scheduleLogoLoad(() => loadOfficialLogo(img, wrap, appId));
+      return wrap;
+    }
+
+    function updateSourceSelection() {
+      dom.sourceGrid.querySelectorAll("[data-app-id]").forEach(button => {
+        const isActive = button.dataset.appId === selectedAppId;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
+      });
+    }
+
+    function updateHeroSourceLogo() {
+      const app = getSelectedApp();
+      heroSourceVisible = true;
+      heroLogoAppId = app.id;
+      heroLogoName = app.name;
+      dom.heroLogoMark.replaceChildren(createLogo(app.id));
+      dom.heroLogoName.textContent = app.name;
+      dom.hero.classList.add("is-source-selected");
+      dom.heroLogo.classList.remove("is-entering");
+      void dom.heroLogo.offsetWidth;
+      dom.heroLogo.classList.add("is-entering");
+    }
+
+    function getFallbackLogoSvg(appId) {
+      const meta = LOGO_FALLBACK_META[appId] || LOGO_FALLBACK_META.baidu;
+      const fontSize = meta.label.length > 2 ? 15 : 20;
+      return `<svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" rx="18" fill="${meta.bg}"/><circle cx="50" cy="15" r="5" fill="${meta.fg}" opacity=".22"/><text x="32" y="37" text-anchor="middle" dominant-baseline="middle" fill="${meta.fg}" font-size="${fontSize}" font-weight="700" font-family="Arial, sans-serif">${meta.label}</text></svg>`;
+    }
+
+    function scheduleLogoLoad(callback) {
+      logoLoadQueue.push(callback);
+      if (logoLoadScheduled) return;
+      logoLoadScheduled = true;
+
+      const flush = () => {
+        logoLoadScheduled = false;
+        logoLoadQueue.splice(0).forEach(task => task());
+      };
+      const idle = () => {
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(flush, { timeout: 800 });
+        } else {
+          window.setTimeout(flush, 80);
+        }
+      };
+
+      if ("requestAnimationFrame" in window) {
+        window.requestAnimationFrame(() => window.requestAnimationFrame(idle));
+      } else {
+        window.setTimeout(idle, 0);
+      }
+    }
+
+    function loadOfficialLogo(img, wrap, appId) {
+      const cached = logoCache.get(appId);
+      const sources = LOGO_PNG_SOURCES[appId] || [];
+      const queue = cached ? [cached, ...sources.filter(url => url !== cached)] : sources.slice();
+      let index = 0;
+
+      const tryNext = () => {
+        if (index >= queue.length) {
+          wrap.dataset.logoReady = "false";
+          img.removeAttribute("src");
+          return;
+        }
+        img.src = queue[index++];
+      };
+
+      img.addEventListener("load", () => {
+        logoCache.set(appId, img.src);
+        wrap.dataset.logoReady = "true";
+      });
+
+      img.addEventListener("error", () => {
+        tryNext();
+      });
+
+      tryNext();
+    }
+
+    function renderRecentHistory() {
+      dom.recentList.replaceChildren();
+      const items = history.slice(0, getRecentHistoryLimit());
+      if (!items.length) {
+        const empty = document.createElement("li");
+        const note = document.createElement("p");
+        note.className = "empty-state";
+        note.textContent = "还没有搜索记录";
+        empty.appendChild(note);
+        dom.recentList.appendChild(empty);
+        return;
+      }
+
+      items.forEach((item, index) => {
+        const li = document.createElement("li");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "recent-chip";
+        button.style.animationDelay = `${index * 40}ms`;
+        button.setAttribute("aria-label", `再次搜索 ${item.q}`);
+        button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"></circle></svg>';
+        const text = document.createElement("span");
+        text.textContent = item.q;
+        button.appendChild(text);
+        button.addEventListener("click", () => {
+          if (appById.has(item.appId)) {
+            selectedAppId = item.appId;
+            persist(KEYS.selectedApp, selectedAppId);
+          }
+          dom.searchInput.value = item.q;
+          updateSourceSelection();
+          updateHeroSourceLogo();
+          performSearch();
+        });
+        li.appendChild(button);
+        dom.recentList.appendChild(li);
+      });
+    }
+
+    function performSearch() {
+      const q = dom.searchInput.value.trim();
+      if (!q) {
+        dom.searchInput.focus();
+        return;
+      }
+      const app = getSelectedApp();
+      const links = buildLinks(app, q);
+      saveHistoryEntry(q, app);
+      openSearch(links);
+    }
+
+    function buildLinks(app, q) {
+      const encoded = encodeURIComponent(q);
+      const web = formatUrl(app.web, encoded);
+      let primary = web;
+      let mode = "网页搜索";
+
+      if (currentEnv.desktop) {
+        mode = "桌面端：网页搜索";
+      } else if (currentEnv.inApp) {
+        mode = "内嵌浏览器：网页搜索";
+      } else if (currentEnv.ios) {
+        mode = "iOS：网页搜索";
+      } else if (currentEnv.android) {
+        mode = "Android：网页搜索";
+      }
+
+      return { app, q, web, primary, mode, deepType: "" };
+    }
+
+    function openSearch(links) {
+      if (settings.openTarget === "new") {
+        const opened = window.open(links.primary, "_blank", "noopener,noreferrer");
+        if (opened) return;
+      }
+      window.location.href = links.primary;
+    }
+
+    function saveHistoryEntry(q, app) {
+      if (!settings.saveHistory) return;
+      const normalizedQ = q.trim().slice(0, 120);
+      if (!normalizedQ) return;
+      const next = history.filter(item => !(item.appId === app.id && item.q === normalizedQ));
+      next.unshift({ q: normalizedQ, appId: app.id, appName: app.name, time: Date.now() });
+      history = normalizeHistory(next);
+      persist(KEYS.history, history);
+      renderRecentHistory();
+    }
+
+    function clearHistory() {
+      history = [];
+      persist(KEYS.history, history);
+      renderRecentHistory();
+    }
+
+    function normalizeHistory(value) {
+      if (!Array.isArray(value)) return [];
+      const deduped = new Map();
+      value.forEach(item => {
+        if (!item || typeof item.q !== "string" || !appById.has(item.appId)) return;
+        const q = item.q.trim().slice(0, 120);
+        if (!q) return;
+        const time = Number(item.time) || Date.now();
+        const key = `${item.appId}\u0000${q}`;
+        const current = deduped.get(key);
+        if (!current || time > current.time) {
+          deduped.set(key, { q, appId: item.appId, appName: appById.get(item.appId).name, time });
+        }
+      });
+      return [...deduped.values()].sort((a, b) => b.time - a.time).slice(0, 30);
+    }
+
+    function normalizeSettings(value) {
+      const raw = value && typeof value === "object" ? value : {};
+      return {
+        openTarget: raw.openTarget === "new" ? "new" : "same",
+        saveHistory: raw.saveHistory !== undefined ? Boolean(raw.saveHistory) : true,
+        theme: ["light", "dark", "system"].includes(raw.theme) ? raw.theme : "system"
+      };
+    }
+
+    function updateSetting(key, value) {
+      settings = normalizeSettings({ ...settings, [key]: value });
+      persist(KEYS.settings, settings);
+      if (key === "theme") persist(KEYS.theme, settings.theme);
+      applyTheme();
+      syncMenuState();
+    }
+
+    function setTheme(theme) {
+      updateSetting("theme", theme);
+    }
+
+    function applyTheme() {
+      const effectiveTheme = getEffectiveTheme();
+      document.documentElement.setAttribute("data-theme", settings.theme);
+      document.documentElement.dataset.theme = settings.theme;
+      document.documentElement.setAttribute("data-effective-theme", effectiveTheme);
+    }
+
+    function getEffectiveTheme() {
+      if (settings.theme === "system") {
+        return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      return settings.theme;
+    }
+
+    function syncMenuState() {
+      dom.menuToggle.setAttribute("aria-expanded", String(!dom.menuPanel.hidden));
+      dom.themeSegment.querySelectorAll("[data-theme-option]").forEach(button => {
+        button.classList.toggle("is-active", button.dataset.themeOption === settings.theme);
+      });
+      dom.targetSegment.querySelectorAll("[data-target-option]").forEach(button => {
+        button.classList.toggle("is-active", button.dataset.targetOption === settings.openTarget);
+      });
+    }
+
+    function toggleMenu() {
+      if (dom.menuPanel.hidden || menuCloseTimer) {
+        openMenu();
+        return;
+      }
+      closeMenu();
+    }
+
+    function openMenu() {
+      if (menuCloseTimer) {
+        window.clearTimeout(menuCloseTimer);
+        menuCloseTimer = 0;
+      }
+      dom.menuPanel.hidden = false;
+      requestAnimationFrame(() => {
+        dom.menuPanel.classList.add("is-open");
+        syncMenuState();
+      });
+    }
+
+    function closeMenu() {
+      if (menuCloseTimer) {
+        window.clearTimeout(menuCloseTimer);
+      }
+      dom.menuPanel.classList.remove("is-open");
+      dom.menuToggle.setAttribute("aria-expanded", "false");
+      menuCloseTimer = window.setTimeout(() => {
+        menuCloseTimer = 0;
+        dom.menuPanel.hidden = true;
+        syncMenuState();
+      }, 180);
+    }
+
+    function formatUrl(template, encoded) {
+      return String(template).split("{q}").join(encoded);
+    }
+
+    function getEnabledApps() {
+      return APP_CONFIG.filter(app => app.enabledByDefault);
+    }
+
+    function getSelectedApp() {
+      return appById.get(selectedAppId) || APP_CONFIG[0];
+    }
+
+    function ensureSelectedApp() {
+      if (!appById.has(selectedAppId)) {
+        selectedAppId = APP_CONFIG[0].id;
+        persist(KEYS.selectedApp, selectedAppId);
+      }
+    }
+
+    function getRecentHistoryLimit() {
+      return window.matchMedia && window.matchMedia("(min-width: 760px)").matches
+        ? RECENT_HISTORY_LIMITS.wide
+        : RECENT_HISTORY_LIMITS.compact;
+    }
+
+    function detectEnvironment() {
+      const ua = navigator.userAgent || "";
+      const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      const android = /Android/i.test(ua);
+      const inApp = /MicroMessenger|Weibo|aweme|Bytedance|Kwai|XiaoHongShu|FBAN|Instagram|Line\//i.test(ua);
+      return { ios, android, inApp, desktop: !ios && !android };
+    }
+
+    function persist(key, value) {
+      safeStorage.set(key, value);
+    }
+  </script>
+</body>
+</html>

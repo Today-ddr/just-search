@@ -1,0 +1,12 @@
+.DS_Store
+.ace-tool/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+dist/
+tests/
+tmp-logo/
+tmp-visual-checks/
